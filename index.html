@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenConsent v2 — live examples</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.6;
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+  h1 { margin-bottom: .25rem; }
+  .lead { font-size: 1.1rem; opacity: .8; margin-top: 0; }
+  ul { list-style: none; padding: 0; }
+  li { margin: 1rem 0; }
+  a.card {
+    display: block;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(128,128,128,.35);
+    border-radius: .6rem;
+    text-decoration: none;
+    color: inherit;
+  }
+  a.card:hover { border-color: #58a6ff; }
+  a.card strong { display: block; font-size: 1.05rem; }
+  a.card span { opacity: .75; font-size: .95rem; }
+  footer { margin-top: 3rem; font-size: .9rem; opacity: .7; }
+</style>
+</head>
+<body>
+  <h1>🍪 OpenConsent v2</h1>
+  <p class="lead">
+    Native Google Consent Mode v2 for GDPR cookie consent — zero dependencies,
+    full control, no monthly fees.
+  </p>
+
+  <h2>Live examples</h2>
+  <ul>
+    <li>
+      <a class="card" href="examples/basic.html">
+        <strong>Basic banner</strong>
+        <span>The consent banner in its default configuration.</span>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="examples/gtm-implementation.html">
+        <strong>Google Tag Manager</strong>
+        <span>Wiring consent signals into GTM.</span>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="test-gdpr-compliance.html">
+        <strong>GDPR compliance checks</strong>
+        <span>The behaviours the banner is expected to satisfy.</span>
+      </a>
+    </li>
+  </ul>
+
+  <footer>
+    Source and documentation on
+    <a href="https://github.com/iAlias/rs-cmp">GitHub</a>.
+  </footer>
+</body>
+</html>
