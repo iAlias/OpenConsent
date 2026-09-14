@@ -1,8 +1,22 @@
 {
-  "name": "rs-cmp",
+  "name": "openconsent",
   "version": "1.0.0",
-  "description": "GDPR-compliant Consent Management Platform",
+  "description": "Lightweight, dependency-free GDPR Consent Management Platform (CMP) with native Google Consent Mode v2 support. Drop-in cookie banner, script blocking, no monthly fees.",
   "main": "dist/cmp.js",
+  "browser": "dist/cmp.min.js",
+  "unpkg": "dist/cmp.min.js",
+  "jsdelivr": "dist/cmp.min.js",
+  "types": "dist/cmp.d.ts",
+  "files": [
+    "dist/cmp.js",
+    "dist/cmp.min.js",
+    "dist/cmp.d.ts",
+    "examples",
+    "server-side",
+    "README.md",
+    "LICENSE",
+    "GDPR_COMPLIANCE.md"
+  ],
   "scripts": {
     "build:sdk": "npm run build:sdk:dev && npm run build:sdk:prod",
     "build:sdk:dev": "esbuild src/cmp.js --bundle --outfile=dist/cmp.js --format=iife --global-name=RSCMP --target=es2015",
@@ -13,16 +27,37 @@
     "build": "npm run build:sdk",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "lint": "eslint src --ext .ts,.js"
+    "lint": "eslint src --ext .ts,.js",
+    "prepublishOnly": "npm run lint && npm test && npm run build"
   },
   "keywords": [
-    "cmp",
     "gdpr",
     "consent",
-    "cookie",
-    "privacy"
+    "consent-management-platform",
+    "cmp",
+    "cookie-banner",
+    "cookie-consent",
+    "cookiebot-alternative",
+    "onetrust-alternative",
+    "iubenda-alternative",
+    "google-consent-mode",
+    "consent-mode-v2",
+    "gtm",
+    "google-tag-manager",
+    "privacy",
+    "european-accessibility-act",
+    "vanilla-javascript",
+    "zero-dependencies"
   ],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iAlias/openconsent.git"
+  },
+  "homepage": "https://ialias.github.io/openconsent/",
+  "bugs": {
+    "url": "https://github.com/iAlias/openconsent/issues"
+  },
+  "author": "Antonino Di Stefano",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.10.0",
@@ -34,11 +69,5 @@
     "jest-environment-jsdom": "^29.7.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.2"
-  },
-  "dependencies": {
-    "@fastify/cors": "^8.4.2",
-    "@fastify/rate-limit": "^9.0.1",
-    "fastify": "^4.25.0",
-    "pg": "^8.11.3"
   }
 }

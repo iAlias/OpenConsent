@@ -1,6 +1,14 @@
 # Server-Side Consent Logger Examples
 
-This folder contains backend examples for GDPR-compliant consent logging. These examples show you how to receive and store consent data from the OpenConsent v2 CMP.
+This folder contains backend examples for GDPR-compliant consent logging. These examples show you how to receive and store consent data from the OpenConsent CMP.
+
+> **These examples are optional and standalone.** The client SDK needs no backend, and these
+dependencies are **not** installed with the `openconsent` package. Install them here only if
+you want consent logging:
+>
+> ```bash
+> cd server-side && npm install
+> ```
 
 ## 🔒 GDPR Compliance
 
