@@ -20,3 +20,5 @@ test-cookie-deletion.html
 simple-server.js
 consent_logs.jsonl
 node_modules/
+
+dist/cmp.js

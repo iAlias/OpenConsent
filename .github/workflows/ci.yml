@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint, test & build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build SDK bundles
+        run: npm run build
+
+      - name: Ensure the committed CDN bundle is up to date
+        run: |
+          if ! git diff --quiet -- dist/cmp.min.js; then
+            echo "::error::dist/cmp.min.js is out of date. Run 'npm run build' and commit dist/cmp.min.js."
+            git --no-pager diff --stat -- dist/cmp.min.js
+            exit 1
+          fi
+          echo "dist/cmp.min.js is in sync with src/cmp.js"

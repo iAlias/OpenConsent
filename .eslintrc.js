@@ -18,4 +18,11 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   },
+  overrides: [
+    {
+      files: ['**/__tests__/**/*.js', '**/*.test.js', '**/*.test.ts'],
+      env: { jest: true, node: true },
+      rules: { '@typescript-eslint/no-var-requires': 'off' },
+    },
+  ],
 };

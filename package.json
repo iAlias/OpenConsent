@@ -5,16 +5,14 @@
   "main": "dist/cmp.js",
   "scripts": {
     "build:sdk": "npm run build:sdk:dev && npm run build:sdk:prod",
-    "build:sdk:dev": "esbuild src/cmp.ts --bundle --outfile=dist/cmp.js --format=iife --global-name=RSCMP --target=es2015",
-    "build:sdk:prod": "esbuild src/cmp.ts --bundle --minify --outfile=dist/cmp.min.js --format=iife --global-name=RSCMP --target=es2015",
+    "build:sdk:dev": "esbuild src/cmp.js --bundle --outfile=dist/cmp.js --format=iife --global-name=RSCMP --target=es2015",
+    "build:sdk:prod": "esbuild src/cmp.js --bundle --minify --outfile=dist/cmp.min.js --format=iife --global-name=RSCMP --target=es2015",
     "build:sdk:js": "npm run build:sdk:js:dev && npm run build:sdk:js:prod",
     "build:sdk:js:dev": "esbuild src/cmp.js --bundle --outfile=dist/cmp-js.js --format=iife --global-name=RSCMP --target=es2015",
     "build:sdk:js:prod": "esbuild src/cmp.js --bundle --minify --outfile=dist/cmp-js.min.js --format=iife --global-name=RSCMP --target=es2015",
-    "build:backend": "tsc -p tsconfig.backend.json",
-    "build": "npm run build:sdk && npm run build:sdk:js && npm run build:backend",
-    "dev:backend": "tsx watch src/backend/server.ts",
-    "start": "node dist/backend/server.js",
+    "build": "npm run build:sdk",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "lint": "eslint src --ext .ts,.js"
   },
   "keywords": [
@@ -33,6 +31,7 @@
     "esbuild": "^0.19.8",
     "eslint": "^8.54.0",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.2"
   },
