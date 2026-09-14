@@ -65,11 +65,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iAlias/openconsent.git"
+    "url": "git+https://github.com/iAlias/OpenConsent.git"
   },
-  "homepage": "https://ialias.github.io/openconsent/",
+  "homepage": "https://ialias.github.io/OpenConsent/",
   "bugs": {
-    "url": "https://github.com/iAlias/openconsent/issues"
+    "url": "https://github.com/iAlias/OpenConsent/issues"
   },
   "author": "Antonino Di Stefano",
   "license": "MIT",

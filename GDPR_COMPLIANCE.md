@@ -227,4 +227,4 @@ Questo dimostra:
 
 ## Supporto
 
-Per domande o problemi, apri un'issue su GitHub: https://github.com/iAlias/openconsent/issues
+Per domande o problemi, apri un'issue su GitHub: https://github.com/iAlias/OpenConsent/issues
