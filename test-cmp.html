@@ -42,7 +42,7 @@
     <h2>Test Cookies Setup</h2>
     <p>This page will set various test cookies to verify the CMP functionality.</p>
     <button onclick="setTestCookies()">Set Test Cookies</button>
-    <button onclick="window.RSCMP.showPreferences()">Open Preferences</button>
+    <button onclick="window.OpenConsent.showPreferences()">Open Preferences</button>
   </div>
   
   <div class="test-section">
@@ -96,7 +96,7 @@
     }
     
     // Initialize CMP
-    window.RSCMP.init().then(() => {
+    window.OpenConsent.init().then(() => {
       console.log('[Test] CMP initialized');
       
       // Set test cookies after a short delay

@@ -20,7 +20,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/__tests__/**/*.js', '**/*.test.js', '**/*.test.ts'],
+      files: ['**/__tests__/**/*.js', '**/*.test.js', '**/*.test.ts', 'src/browser.js', 'src/index.mjs'],
       env: { jest: true, node: true },
       rules: { '@typescript-eslint/no-var-requires': 'off' },
     },

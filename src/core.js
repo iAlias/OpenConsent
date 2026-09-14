@@ -1,5 +1,5 @@
 /**
- * RS-CMP - GDPR-Compliant Consent Management Platform
+ * OpenConsent - GDPR-Compliant Consent Management Platform
  * Consolidated SDK - All-in-one file
  * Pure JavaScript Version (ES2015+)
  */
@@ -91,8 +91,10 @@
 // CONSENT STORAGE
 // ============================================================================
 
-const STORAGE_KEY = 'rs-cmp-consent';
-const COOKIE_NAME = 'rs-cmp-consent';
+const STORAGE_KEY = 'openconsent';
+const LEGACY_STORAGE_KEY = 'rs-cmp-consent'; // previous name, migrated on read
+const COOKIE_NAME = 'openconsent';
+const LEGACY_COOKIE_NAME = 'rs-cmp-consent';
 const COOKIE_MAX_AGE = 365 * 24 * 60 * 60; // 1 year in seconds
 
 /**
@@ -128,7 +130,7 @@ class ConsentStorage {
     try {
       localStorage.setItem(STORAGE_KEY, consentString);
     } catch (error) {
-      console.warn('[RS-CMP] Failed to save to localStorage:', error);
+      console.warn('[OpenConsent] Failed to save to localStorage:', error);
     }
 
     // Save minimal cookie (just "1" to indicate consent exists)
@@ -143,6 +145,15 @@ class ConsentStorage {
   getConsent() {
     // Try localStorage first (has full state)
     try {
+      // Seamless migration from the previous storage key.
+      if (!localStorage.getItem(STORAGE_KEY)) {
+        const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+        if (legacy) {
+          localStorage.setItem(STORAGE_KEY, legacy);
+          localStorage.removeItem(LEGACY_STORAGE_KEY);
+        }
+      }
+
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const data = JSON.parse(stored);
@@ -151,7 +162,7 @@ class ConsentStorage {
         const consentDate = new Date(data.timestamp);
         const daysSinceConsent = (Date.now() - consentDate.getTime()) / (1000 * 60 * 60 * 24);
         if (daysSinceConsent > 365) {
-          console.log('[RS-CMP] Consent expired (> 12 months), clearing...');
+          console.log('[OpenConsent] Consent expired (> 12 months), clearing...');
           this.clearConsent();
           return null;
         }
@@ -159,14 +170,14 @@ class ConsentStorage {
         return data;
       }
     } catch (error) {
-      console.warn('[RS-CMP] Failed to read from localStorage:', error);
+      console.warn('[OpenConsent] Failed to read from localStorage:', error);
     }
 
     // Cookie only indicates consent exists (minimal: "1")
     // If localStorage is not available, we can't get the full consent state
-    const cookieValue = this.getCookie(COOKIE_NAME);
+    const cookieValue = this.getCookie(COOKIE_NAME) || this.getCookie(LEGACY_COOKIE_NAME);
     if (cookieValue === '1') {
-      console.warn('[RS-CMP] Cookie found but localStorage unavailable - cannot retrieve full consent state');
+      console.warn('[OpenConsent] Cookie found but localStorage unavailable - cannot retrieve full consent state');
     }
 
     return null;
@@ -179,11 +190,13 @@ class ConsentStorage {
   clearConsent() {
     try {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
     } catch (error) {
-      console.warn('[RS-CMP] Failed to clear localStorage:', error);
+      console.warn('[OpenConsent] Failed to clear localStorage:', error);
     }
 
     this.deleteCookie(COOKIE_NAME);
+    this.deleteCookie(LEGACY_COOKIE_NAME);
   }
 
   /**
@@ -556,7 +569,7 @@ class ScriptBlocker {
   startScriptObserver() {
     // Check if MutationObserver is available
     if (typeof MutationObserver === 'undefined') {
-      console.warn('[RS-CMP] MutationObserver not available, dynamic script blocking disabled');
+      console.warn('[OpenConsent] MutationObserver not available, dynamic script blocking disabled');
       return;
     }
 
@@ -588,7 +601,7 @@ class ScriptBlocker {
       subtree: true
     });
 
-    console.log('[RS-CMP] Script observer started for dynamic script blocking');
+    console.log('[OpenConsent] Script observer started for dynamic script blocking');
   }
 
   /**
@@ -599,12 +612,12 @@ class ScriptBlocker {
    */
   processNewScript(script) {
     // Skip if already processed
-    if (script.getAttribute('data-rs-cmp-processed')) {
+    if (script.getAttribute('data-openconsent-processed')) {
       return;
     }
 
     // Mark as processed
-    script.setAttribute('data-rs-cmp-processed', 'true');
+    script.setAttribute('data-openconsent-processed', 'true');
 
     // Check if script has data-category
     let category = script.getAttribute('data-category');
@@ -626,7 +639,7 @@ class ScriptBlocker {
         script.setAttribute('data-original-type', script.type || 'text/javascript');
         script.type = 'text/plain';
         this.blockedScripts.push(script);
-        console.log(`[RS-CMP] Blocked dynamically added ${category} script`);
+        console.log(`[OpenConsent] Blocked dynamically added ${category} script`);
       }
     }
   }
@@ -640,7 +653,7 @@ class ScriptBlocker {
     if (this.scriptObserver) {
       this.scriptObserver.disconnect();
       this.scriptObserver = null;
-      console.log('[RS-CMP] Script observer stopped');
+      console.log('[OpenConsent] Script observer stopped');
     }
   }
 
@@ -681,7 +694,7 @@ class GoogleConsentMode {
    * @returns {void}
    */
   initializeDefaultConsent() {
-    if (typeof window.gtag === 'function') {
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
       window.gtag('consent', 'default', {
         ad_storage: 'denied',
         ad_user_data: 'denied',
@@ -700,6 +713,8 @@ class GoogleConsentMode {
    * @returns {void}
    */
   update(categories) {
+    if (typeof window === 'undefined') return;
+
     if (typeof window.gtag !== 'function') {
       // gtag not available, try to initialize
       this.initializeGtag();
@@ -723,6 +738,7 @@ class GoogleConsentMode {
    * @returns {void}
    */
   initializeGtag() {
+    if (typeof window === 'undefined') return;
     if (typeof window.gtag === 'undefined') {
       // Create gtag function
       window.dataLayer = window.dataLayer || [];
@@ -1578,6 +1594,8 @@ class RSCMP {
     this.config = null;
     /** @type {string | null} */
     this.siteId = null;
+    /** @type {string | null} */
+    this.apiUrl = null;
     /** @type {boolean} */
     this.debugMode = false;
     /** @type {HTMLElement | null} */
@@ -1586,23 +1604,36 @@ class RSCMP {
 
   /**
    * Initialize the CMP
-   * @param {Config | null} [inlineConfig] - Optional inline configuration
+   * @param {InitOptions | Config | null} [options] - Options `{ siteId, apiUrl, config }`
+   *   or, for backwards compatibility, an inline Config object.
    * @returns {Promise<void>}
    */
-  async init(inlineConfig = null) {
+  async init(options = null) {
     try {
       // Get site-id from script tag
       this.siteId = this.getSiteIdFromScript();
-      
+
+      // Accept either an options object or (legacy) a bare Config.
+      let inlineConfig = null;
+      if (options) {
+        if (options.config || options.siteId || options.apiUrl) {
+          if (options.siteId) this.siteId = options.siteId;
+          if (options.apiUrl) this.apiUrl = options.apiUrl;
+          inlineConfig = options.config || null;
+        } else {
+          inlineConfig = options;
+        }
+      }
+
       // Support inline configuration
       if (inlineConfig) {
         this.config = this.mergeWithDefaults(inlineConfig);
-      } else if (this.siteId) {
+      } else if (this.siteId && this.getApiUrl()) {
         // Try to load from API, fall back to default if unavailable
         try {
           this.config = await this.loadConfig(this.siteId);
         } catch (apiError) {
-          console.warn('[RS-CMP] Failed to load config from API, using default configuration:', apiError.message);
+          console.warn('[OpenConsent] Failed to load config from API, using default configuration:', apiError.message);
           this.config = this.getDefaultConfig();
         }
       } else {
@@ -1638,7 +1669,7 @@ class RSCMP {
       });
 
     } catch (error) {
-      console.error('[RS-CMP] Initialization error:', error);
+      console.error('[OpenConsent] Initialization error:', error);
     }
   }
 
@@ -1693,12 +1724,14 @@ class RSCMP {
    * @returns {string} API URL
    */
   getApiUrl() {
+    if (this.apiUrl) return this.apiUrl;
     const scripts = document.querySelectorAll('script[data-site-id]');
     if (scripts.length > 0) {
       const customUrl = scripts[0].getAttribute('data-api-url');
       if (customUrl) return customUrl;
     }
-    return 'https://api.rs-cmp.com'; // Default API URL
+    // No backend by default: OpenConsent is fully client-side unless you opt in.
+    return '';
   }
 
   /**
@@ -1724,7 +1757,7 @@ class RSCMP {
     // Scripts are now unblocked and services loaded dynamically without reload
     // This provides a smoother user experience
     if (shouldReload) {
-      console.log('[RS-CMP] Page reload requested but skipped - using hot-swapping instead');
+      console.log('[OpenConsent] Page reload requested but skipped - using hot-swapping instead');
     }
   }
 
@@ -1762,7 +1795,7 @@ class RSCMP {
    */
   enableDebug() {
     this.debugMode = true;
-    console.log('[RS-CMP] Debug mode enabled');
+    console.log('[OpenConsent] Debug mode enabled');
   }
 
   /**
@@ -1780,7 +1813,7 @@ class RSCMP {
    */
   log(...args) {
     if (this.debugMode) {
-      console.log('[RS-CMP]', ...args);
+      console.log('[OpenConsent]', ...args);
     }
   }
 
@@ -1791,7 +1824,7 @@ class RSCMP {
    */
   setDebugMode(enabled) {
     this.debugMode = enabled;
-    console.log(`[RS-CMP] Debug mode ${enabled ? 'enabled' : 'disabled'}`);
+    console.log(`[OpenConsent] Debug mode ${enabled ? 'enabled' : 'disabled'}`);
   }
 
   /**
@@ -1814,12 +1847,12 @@ class RSCMP {
    */
   testConsentMode() {
     if (typeof window.gtag === 'function') {
-      console.log('[RS-CMP] Testing Google Consent Mode...');
+      console.log('[OpenConsent] Testing Google Consent Mode...');
       window.gtag('get', 'G-XXXXXX', 'consent', (consent) => {
-        console.log('[RS-CMP] Current consent state:', consent);
+        console.log('[OpenConsent] Current consent state:', consent);
       });
     } else {
-      console.warn('[RS-CMP] gtag not available');
+      console.warn('[OpenConsent] gtag not available');
     }
   }
 
@@ -1929,7 +1962,7 @@ class RSCMP {
 
     // Create button
     const button = document.createElement('button');
-    button.id = 'rs-cmp-reopen-btn';
+    button.id = 'openconsent-reopen-btn';
     button.setAttribute('aria-label', 'Privacy Settings');
     button.title = 'Privacy Settings';
     button.innerHTML = `
@@ -1939,11 +1972,11 @@ class RSCMP {
     `;
 
     // Add styles
-    if (!document.getElementById('rs-cmp-reopen-styles')) {
+    if (!document.getElementById('openconsent-reopen-styles')) {
       const style = document.createElement('style');
-      style.id = 'rs-cmp-reopen-styles';
+      style.id = 'openconsent-reopen-styles';
       style.textContent = `
-        #rs-cmp-reopen-btn {
+        #openconsent-reopen-btn {
           position: fixed;
           bottom: 20px;
           left: 20px;
@@ -1962,18 +1995,18 @@ class RSCMP {
           transition: all 0.3s ease;
         }
         
-        #rs-cmp-reopen-btn:hover {
+        #openconsent-reopen-btn:hover {
           transform: scale(1.1);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
-        #rs-cmp-reopen-btn:focus {
+        #openconsent-reopen-btn:focus {
           outline: 2px solid ${primaryColor};
           outline-offset: 2px;
         }
         
         @media (max-width: 768px) {
-          #rs-cmp-reopen-btn {
+          #openconsent-reopen-btn {
             bottom: 15px;
             left: 15px;
             width: 44px;
@@ -2019,8 +2052,9 @@ class RSCMP {
    * @returns {Promise<void>}
    */
   async sendConsentToBackend(categories) {
+    const apiUrl = this.getApiUrl();
+    if (!apiUrl) return; // Client-only mode: nothing to report.
     try {
-      const apiUrl = this.getApiUrl();
       await fetch(`${apiUrl}/v1/consent`, {
         method: 'POST',
         headers: {
@@ -2034,51 +2068,38 @@ class RSCMP {
         }),
       });
     } catch (error) {
-      console.error('[RS-CMP] Failed to send consent:', error);
+      console.error('[OpenConsent] Failed to send consent:', error);
     }
   }
 }
 
 // ============================================================================
-// INITIALIZATION
+// LIBRARY EXPORTS
 // ============================================================================
 
-// Create instance  
-const cmpInstance = new RSCMP();
-
-// Expose to window and return for IIFE assignment
-if (typeof window !== 'undefined') {
-  // Early script blocking - run immediately to block scripts before they execute
-  // This is crucial for proper cookie blocking
-  if (document.readyState === 'loading') {
-    // Block scripts immediately
-    cmpInstance.scriptBlocker.blockScripts();
-  } else {
-    // Block scripts if document already loaded
-    cmpInstance.scriptBlocker.blockScripts();
+/**
+ * Create a new OpenConsent instance without touching the DOM.
+ * Use this in module/bundler contexts; the browser build wires up the
+ * auto-initialization and `window.OpenConsent` separately.
+ *
+ * @param {InitOptions | Config | null} [options] - Same options accepted by `init()`.
+ * @returns {RSCMP} A fresh instance.
+ */
+function createOpenConsent(options = null) {
+  const instance = new RSCMP();
+  if (options) {
+    instance.init(options);
   }
-  
-  // Expose to window for manual control
-  window.RSCMP = cmpInstance;
-  
-  // Check if auto-init is enabled (default: true)
-  const autoInit = cmpInstance.shouldAutoInit();
-  
-  if (autoInit) {
-    // Auto-initialize the CMP
-    console.log('[RS-CMP] Auto-initializing...');
-    cmpInstance.init().catch(err => {
-      console.error('[RS-CMP] Auto-initialization failed:', err);
-    });
-  } else {
-    // Manual initialization required
-    console.log('[RS-CMP] Manual init required. Call window.RSCMP.init() to initialize.');
-  }
+  return instance;
 }
 
-// Export for both IIFE (esbuild) and other module systems
-// In browser context, window.RSCMP is already set above
-// This export is for Node.js/CommonJS and esbuild's IIFE wrapper
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = cmpInstance;
-}
+module.exports = {
+  OpenConsent: RSCMP,
+  RSCMP,
+  createOpenConsent,
+  ConsentStorage,
+  ConsentManager,
+  ScriptBlocker,
+  GoogleConsentMode,
+  BannerUI
+};

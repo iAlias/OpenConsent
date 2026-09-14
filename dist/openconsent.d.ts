@@ -1,8 +1,10 @@
 /**
  * OpenConsent — GDPR Consent Management Platform with Google Consent Mode v2.
  *
- * The distributed bundle is an IIFE that exposes a singleton instance on
- * `window.RSCMP`. These declarations describe that public instance.
+ * Two ways to use it:
+ * - Browser: load `dist/openconsent.min.js` and use the `window.OpenConsent`
+ *   singleton (also exposed as `window.RSCMP` for backwards compatibility).
+ * - Bundlers: `import { createOpenConsent } from 'openconsent'`.
  */
 
 export interface ConsentCategories {
@@ -83,7 +85,7 @@ export interface Config {
 export interface InitOptions {
   /** Site identifier (can also be set via `data-site-id` on the script tag). */
   siteId?: string;
-  /** Override the configuration API endpoint. */
+  /** Optional consent-logging backend. When omitted, the CMP is fully client-side. */
   apiUrl?: string;
   /** Inline configuration, merged over the defaults. */
   config?: Config;
@@ -127,7 +129,7 @@ export interface GoogleConsentMode {
 
 export interface RSCMPInstance {
   /** Initialize the CMP. Resolves once the config is loaded. */
-  init(options?: InitOptions | null): Promise<void>;
+  init(options?: InitOptions | Config | null): Promise<void>;
   /** Current consent, or null if the user has not chosen yet. */
   getConsent(): ConsentCategories | null;
   /** Re-open the preferences panel. */
@@ -149,13 +151,40 @@ export interface RSCMPInstance {
   googleConsentMode: GoogleConsentMode;
 }
 
-/** The singleton instance, also available as `window.RSCMP`. */
-declare const cmp: RSCMPInstance;
+export interface RSCMPConstructor {
+  new (): RSCMPInstance;
+}
 
-export default cmp;
+export declare const RSCMP: RSCMPConstructor;
+/** Alias of `RSCMP`, the preferred name. */
+export declare const OpenConsent: RSCMPConstructor;
+export declare const ConsentStorage: new () => ConsentStorage;
+export declare const ConsentManager: new (storage: ConsentStorage) => ConsentManager;
+export declare const ScriptBlocker: new (manager: ConsentManager) => ScriptBlocker;
+export declare const GoogleConsentMode: new (manager: ConsentManager) => GoogleConsentMode;
+
+/** Create an instance. Pass options to initialize immediately. */
+export declare function createOpenConsent(
+  options?: InitOptions | Config | null
+): RSCMPInstance;
+
+declare const _default: {
+  OpenConsent: RSCMPConstructor;
+  RSCMP: RSCMPConstructor;
+  createOpenConsent: typeof createOpenConsent;
+  ConsentStorage: new () => ConsentStorage;
+  ConsentManager: new (storage: ConsentStorage) => ConsentManager;
+  ScriptBlocker: new (manager: ConsentManager) => ScriptBlocker;
+  GoogleConsentMode: new (manager: ConsentManager) => GoogleConsentMode;
+};
+
+export default _default;
 
 declare global {
   interface Window {
+    /** The singleton in the browser build. */
+    OpenConsent: RSCMPInstance;
+    /** Backwards-compatible alias of `window.OpenConsent`. */
     RSCMP: RSCMPInstance;
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;

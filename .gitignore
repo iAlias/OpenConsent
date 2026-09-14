@@ -9,8 +9,15 @@ coverage/
 *.swo
 .cache/
 tmp/
+# Build outputs that are generated at publish/build time (not committed).
+# Committed artifacts: dist/openconsent.min.js, dist/cmp.min.js, dist/openconsent.d.ts
 dist/cmp-js.js
 dist/cmp-js.min.js
+dist/cmp.js
+dist/openconsent.js
+dist/openconsent.cjs
+dist/openconsent.esm.js
+*.tgz
 demo.html
 test-double-load.html
 test-api-fallback.html
@@ -20,5 +27,3 @@ test-cookie-deletion.html
 simple-server.js
 consent_logs.jsonl
 node_modules/
-
-dist/cmp.js

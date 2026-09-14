@@ -1,17 +1,18 @@
 'use strict';
 
 /**
- * Load a fresh instance of the CMP SDK in a controlled jsdom environment.
+ * Load a fresh OpenConsent instance in a controlled jsdom environment.
  *
- * The SDK auto-initializes on load when a `script[data-site-id]` tag is
- * present. We inject one with `data-auto-init="false"` so tests exercise the
- * API explicitly instead of the asynchronous bootstrap.
+ * `src/core.js` is a library with no side effects, so tests construct the
+ * instance explicitly instead of relying on the browser auto-initialization
+ * (which lives in `src/browser.js`).
  */
 function loadCmp() {
   jest.resetModules();
   document.head.innerHTML = '<script data-site-id="test" data-auto-init="false"></script>';
   document.body.innerHTML = '';
-  return require('../../cmp.js');
+  const { RSCMP } = require('../../core.js');
+  return new RSCMP();
 }
 
 module.exports = { loadCmp };

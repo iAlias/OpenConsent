@@ -114,7 +114,7 @@ php -S localhost:8000 php-logger.php
 Update your frontend CMP initialization:
 
 ```javascript
-window.RSCMP.init({
+window.OpenConsent.init({
     siteId: 'your-site-id',
     apiUrl: 'http://localhost:3000',  // or http://localhost:8000 for PHP
     config: { /* ... */ }

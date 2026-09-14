@@ -6,10 +6,10 @@
     <title>Google Tag Manager Integration - OpenConsent v2</title>
     
     <!-- OpenConsent v2 CMP - Place early in <head>, BEFORE GTM -->
-    <script src="../dist/cmp.min.js" data-site-id="demo-gtm-site"></script>
+    <script src="../dist/openconsent.min.js" data-site-id="demo-gtm-site"></script>
     <script>
         // Initialize CMP before GTM
-        window.RSCMP.init({
+        window.OpenConsent.init({
             siteId: 'demo-gtm-site',
             apiUrl: 'http://localhost:3000',
             config: {
@@ -165,8 +165,8 @@
     <h2>Test Consent Changes</h2>
     <p>Use these buttons to test how consent changes affect Google Consent Mode:</p>
     
-    <button onclick="window.RSCMP.showBanner()">Show Banner</button>
-    <button onclick="window.RSCMP.resetConsent()">Reset Consent</button>
+    <button onclick="window.OpenConsent.showPreferences()">Show Banner</button>
+    <button onclick="window.OpenConsent.resetConsent()">Reset Consent</button>
     <button onclick="acceptAll()">Accept All (Programmatic)</button>
     <button onclick="rejectAll()">Reject All (Programmatic)</button>
     
@@ -175,9 +175,9 @@
     
     <div class="code-block">
 &lt;!-- 1. Load OpenConsent v2 CMP first --&gt;
-&lt;script src="https://cdn.example.com/cmp.min.js" data-site-id="your-site-id"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/openconsent@2/dist/openconsent.min.js" data-site-id="your-site-id"&gt;&lt;/script&gt;
 &lt;script&gt;
-    window.RSCMP.init({
+    window.OpenConsent.init({
         siteId: 'your-site-id',
         apiUrl: 'https://your-api-server.com',
         config: { /* your config */ }
@@ -257,7 +257,7 @@ window.addEventListener('rscmp:consent-updated', (event) => {
     <script>
         // Update consent mode status display
         function updateConsentModeStatus() {
-            const consent = window.RSCMP ? window.RSCMP.getConsent() : null;
+            const consent = window.OpenConsent ? window.OpenConsent.getConsent() : null;
             const statusEl = document.getElementById('consent-mode-status');
             
             if (consent) {
@@ -284,7 +284,7 @@ window.addEventListener('rscmp:consent-updated', (event) => {
         
         // Helper functions
         function acceptAll() {
-            window.RSCMP.updateConsent({
+            window.OpenConsent.updateConsent({
                 necessary: true,
                 analytics: true,
                 marketing: true,
@@ -293,7 +293,7 @@ window.addEventListener('rscmp:consent-updated', (event) => {
         }
         
         function rejectAll() {
-            window.RSCMP.updateConsent({
+            window.OpenConsent.updateConsent({
                 necessary: true,
                 analytics: false,
                 marketing: false,

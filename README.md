@@ -10,33 +10,36 @@
 [![GDPR Compliant](https://img.shields.io/badge/GDPR-compliant-success.svg)]()
 
 The free, open-source alternative to Cookiebot, OneTrust and Iubenda: full control over your
-consent management, no vendor lock-in, no monthly fees. One script tag, zero dependencies.
+consent management, no vendor lock-in, no monthly fees. One script tag, zero dependencies,
+**no backend required**.
 
-- 🔒 **GDPR first** — no cookies before consent, IP hashing on the optional backend
-- 🎯 **Google Consent Mode v2** — native integration, zero configuration
-- 🎭 **Script blocking** — hold tracking scripts until the user consents
-- 🧩 **Framework agnostic** — plain JavaScript, works with any stack
-- 🛡️ **CSP friendly** — nonce support, HTML/URL/CSS sanitization
+- 🔒 **GDPR first** — no cookies before consent, 12-month expiry, URL/CSS sanitization
+- 🎯 **Google Consent Mode v2** — native, denied-by-default, zero configuration
+- 🎭 **Script blocking** — hold tracking scripts until the user consents, hot-swap on change
+- 🧩 **Works everywhere** — `<script>` tag, npm (ESM + CommonJS), any framework
+- 🛡️ **CSP friendly** — nonce support
 - 🔄 **SPA ready** — MutationObserver for dynamically added scripts
 - 🌍 **Multi-language** — English and Italian included
-- 📦 **Batteries included** — optional consent-logging examples for Node.js and PHP
+- 📦 **TypeScript types** — shipped with the package
+
+> Part of a small **web-compliance toolkit**: pair it with
+> [AccessiScan](https://github.com/iAlias/AccessiScan) to audit accessibility
+> (WCAG 2.1 / EN 301 549) on the same sites.
 
 ---
 
 ## Install
 
-### Option A — CDN (no build step)
+### Option A — Script tag (no build step)
 
 ```html
-<!-- jsDelivr (npm) -->
-<script src="https://cdn.jsdelivr.net/npm/openconsent@1/dist/cmp.min.js"></script>
-
-<!-- jsDelivr (GitHub, pinned tag) -->
-<script src="https://cdn.jsdelivr.net/gh/iAlias/openconsent@v1.0.0/dist/cmp.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/openconsent@2/dist/openconsent.min.js"></script>
+<!-- pinned to a tag on GitHub instead of npm: -->
+<script src="https://cdn.jsdelivr.net/gh/iAlias/openconsent@v2.0.0/dist/openconsent.min.js"></script>
 ```
 
-Place it as the **first script in `<head>`**, immediately after `<title>`, so tracking scripts
-are blocked before they execute.
+That's enough for the zero-config banner. Place it as the **first script in `<head>`**,
+immediately after `<title>`, so trackers are blocked before they execute.
 
 ### Option B — npm
 
@@ -45,15 +48,26 @@ npm install openconsent
 ```
 
 ```js
-// Import for side effects: it registers `window.RSCMP`.
-import 'openconsent';
+// ESM
+import { createOpenConsent } from 'openconsent';
 
-window.RSCMP.init().then(() => console.log('CMP ready'));
+const cmp = createOpenConsent({
+  config: {
+    banner: {
+      privacyPolicyUrl: 'https://yoursite.com/privacy-policy',
+      cookiePolicyUrl: 'https://yoursite.com/cookie-policy'
+    }
+  }
+});
 ```
 
-> The bundle is a browser IIFE and touches `window`/`document`. In SSR frameworks
-> (Next.js, Nuxt, SvelteKit) import it **client-side only** (`useEffect`, `<ClientOnly>`,
-> or a dynamic `import()`).
+```js
+// CommonJS
+const { createOpenConsent } = require('openconsent');
+```
+
+In the browser build the singleton is exposed as **`window.OpenConsent`**
+(`window.RSCMP` is kept as a backwards-compatible alias).
 
 ---
 
@@ -66,19 +80,8 @@ window.RSCMP.init().then(() => console.log('CMP ready'));
   <meta charset="UTF-8">
   <title>Your Website</title>
 
-  <!-- 1. Load OpenConsent -->
-  <script src="https://cdn.jsdelivr.net/npm/openconsent@1/dist/cmp.min.js"></script>
-  <script>
-    window.RSCMP.init({
-      config: {
-        banner: {
-          // Required for GDPR Art. 13 compliance
-          privacyPolicyUrl: 'https://yoursite.com/privacy-policy',
-          cookiePolicyUrl: 'https://yoursite.com/cookie-policy'
-        }
-      }
-    });
-  </script>
+  <!-- 1. Load OpenConsent (auto-initializes) -->
+  <script src="https://cdn.jsdelivr.net/npm/openconsent@2/dist/openconsent.min.js"></script>
 </head>
 <body>
   <!-- 2. Category-tagged scripts stay blocked until consent is given -->
@@ -93,9 +96,9 @@ window.RSCMP.init().then(() => console.log('CMP ready'));
 </html>
 ```
 
-That's it. On the first visit OpenConsent shows the banner, blocks every `data-category`
-script, and wires up Google Consent Mode v2 automatically. When the user chooses, scripts in
-the consented categories are unblocked **without a page reload**.
+On the first visit OpenConsent shows the banner, blocks every `data-category` script, and wires
+up Google Consent Mode v2 automatically. When the user chooses, scripts in the consented
+categories are unblocked **without a page reload**.
 
 ---
 
@@ -128,7 +131,7 @@ preserved when a script is unblocked.
 ## Configuration
 
 ```js
-window.RSCMP.init({
+window.OpenConsent.init({
   config: {
     policyVersion: '1.0',
     banner: {
@@ -161,17 +164,21 @@ You can also configure it entirely through the script tag:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/openconsent@1/dist/cmp.min.js"
+  src="https://cdn.jsdelivr.net/npm/openconsent@2/dist/openconsent.min.js"
   data-site-id="YOUR_SITE_ID"
   data-api-url="https://your-api.example.com"
   data-auto-init="true"></script>
 ```
 
+`data-api-url` is **optional**. Without it, OpenConsent runs fully client-side and never makes
+a network request.
+
 ---
 
 ## API reference
 
-The singleton is available as `window.RSCMP`.
+The singleton is available as `window.OpenConsent` in the browser, or created explicitly with
+`createOpenConsent()` in a bundler.
 
 | Method | Description |
 | --- | --- |
@@ -187,7 +194,7 @@ The singleton is available as `window.RSCMP`.
 ### Events
 
 ```js
-window.RSCMP.consentManager.on('consentUpdated', (categories) => {
+window.OpenConsent.consentManager.on('consentUpdated', (categories) => {
   console.log('Consent changed:', categories);
 });
 ```
@@ -207,13 +214,12 @@ interface ConsentCategories {
 
 ## Google Consent Mode v2
 
-OpenConsent sets a **denied-by-default** consent state as early as possible and updates it when
-the user chooses. No configuration required. The default state denies `ad_storage`,
-`ad_user_data`, `ad_personalization`, `analytics_storage`, `functionality_storage` and
+OpenConsent sets a **denied-by-default** state as early as possible and updates it when the user
+chooses. No configuration required. The default denies `ad_storage`, `ad_user_data`,
+`ad_personalization`, `analytics_storage`, `functionality_storage` and
 `personalization_storage`, while granting `security_storage`.
 
 ```html
-<!-- Put your gtag bootstrap before or after OpenConsent — both orderings work -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 ```
 
@@ -230,22 +236,19 @@ import { useEffect } from 'react';
 
 export default function ConsentLoader() {
   useEffect(() => {
-    let cancelled = false;
-    import('openconsent').then(() => {
-      if (!cancelled) window.RSCMP.init();
+    import('openconsent').then(({ createOpenConsent }) => {
+      createOpenConsent();
     });
-    return () => { cancelled = true; };
   }, []);
 
   return null;
 }
 ```
 
-Tag scripts in your layout with `type="text/plain"` and `data-category` as in the vanilla
-example. To run code on consent changes:
+Then react to changes:
 
 ```js
-window.RSCMP.consentManager.on('consentUpdated', ({ analytics }) => {
+window.OpenConsent.consentManager.on('consentUpdated', ({ analytics }) => {
   if (analytics) loadAnalytics();
 });
 ```
@@ -267,10 +270,22 @@ buttons and a live consent-status readout.
 
 ---
 
+## Migrating from v1 (`rs-cmp`)
+
+v2 renames the project to **OpenConsent** with no breaking change for existing embeds:
+
+- `window.RSCMP` still works; `window.OpenConsent` is the new name.
+- Consent stored under `rs-cmp-consent` is read and **migrated automatically** to
+  `openconsent` (localStorage) and the cookie is renamed transparently.
+- The old CDN path `dist/cmp.min.js` is still published for existing script tags.
+- The old `init(config)` form still works; `init({ siteId, apiUrl, config })` is now supported.
+
+---
+
 ## Optional: consent logging backend
 
-The SDK is fully client-side and needs **no backend**. If you want to store consent records,
-the [`server-side/`](server-side/) folder contains ready-to-adapt loggers:
+The SDK needs **no backend**. If you want to store consent records, the
+[`server-side/`](server-side/) folder contains ready-to-adapt loggers:
 
 - `node-logger.js` — Node.js/Express + PostgreSQL example
 - `php-logger.php` — PHP example
@@ -286,14 +301,22 @@ cd server-side && npm install
 ## Development
 
 ```bash
-npm install        # install dev dependencies
-npm run build      # build dist/cmp.js (dev) and dist/cmp.min.js (production)
-npm test           # run the Jest suite
-npm run lint       # ESLint
+npm install     # install dev dependencies
+npm run build   # build IIFE (dev + min), legacy, CommonJS and ESM bundles
+npm test        # run the Jest suite
+npm run lint    # ESLint
 ```
 
-Source lives in a single file, [`src/cmp.js`](src/cmp.js). The committed
-`dist/cmp.min.js` is the published bundle; CI fails if it drifts from the source.
+Source layout:
+
+| File | Purpose |
+| --- | --- |
+| `src/core.js` | The library: all classes plus `createOpenConsent()`, no side effects |
+| `src/browser.js` | Browser entry: script blocking, `window.OpenConsent`, auto-init |
+| `src/index.mjs` | ESM entry re-exporting the core |
+
+The committed `dist/openconsent.min.js` (and `dist/cmp.min.js`) are the published bundles; CI
+fails if they drift from the source.
 
 ---
 

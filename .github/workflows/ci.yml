@@ -36,11 +36,18 @@ jobs:
       - name: Build SDK bundles
         run: npm run build
 
-      - name: Ensure the committed CDN bundle is up to date
+      - name: Ensure the committed CDN bundles are up to date
         run: |
-          if ! git diff --quiet -- dist/cmp.min.js; then
-            echo "::error::dist/cmp.min.js is out of date. Run 'npm run build' and commit dist/cmp.min.js."
-            git --no-pager diff --stat -- dist/cmp.min.js
-            exit 1
-          fi
-          echo "dist/cmp.min.js is in sync with src/cmp.js"
+          stale=""
+          for f in dist/openconsent.min.js dist/cmp.min.js; do
+            if ! git diff --quiet -- "$f"; then
+              echo "::error::$f is out of date. Run 'npm run build' and commit it."
+              git --no-pager diff --stat -- "$f"
+              stale="yes"
+            fi
+          done
+          [ -z "$stale" ] || exit 1
+          echo "Bundles are in sync with src/"
+
+      - name: Verify the package builds and packs cleanly
+        run: npm pack --dry-run

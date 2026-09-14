@@ -2,9 +2,10 @@
 
 const { loadCmp } = require('./support/load-cmp');
 
-const STORAGE_KEY = 'rs-cmp-consent';
+const STORAGE_KEY = 'openconsent';
 
 function clearCookies() {
+  document.cookie = 'openconsent=; max-age=0; path=/';
   document.cookie = 'rs-cmp-consent=; max-age=0; path=/';
 }
 
@@ -43,7 +44,7 @@ describe('ConsentStorage', () => {
       version: '1.0',
     });
 
-    expect(document.cookie).toContain('rs-cmp-consent=1');
+    expect(document.cookie).toContain('openconsent=1');
   });
 
   test('clearConsent wipes both localStorage and the cookie', () => {
@@ -57,7 +58,7 @@ describe('ConsentStorage', () => {
 
     expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
     expect(storage.getConsent()).toBeNull();
-    expect(document.cookie).not.toContain('rs-cmp-consent=1');
+    expect(document.cookie).not.toContain('openconsent=1');
   });
 
   test('treats consent older than 12 months as expired', () => {

@@ -92,12 +92,12 @@ Prima di mettere in produzione, devi creare:
   <title>Il Tuo Sito</title>
   
   <!-- OpenConsent v2 CMP -->
-  <script src="https://cdn.jsdelivr.net/gh/iAlias/rs-cmp@latest/dist/cmp-js.min.js" 
+  <script src="https://cdn.jsdelivr.net/npm/openconsent@2/dist/openconsent.min.js" 
           data-auto-init="false"></script>
   <script>
     // Attendi che il DOM sia caricato
     document.addEventListener('DOMContentLoaded', function() {
-      window.RSCMP.init({
+      window.OpenConsent.init({
         siteId: 'IL-TUO-SITE-ID',
         config: {
           banner: {
@@ -227,4 +227,4 @@ Questo dimostra:
 
 ## Supporto
 
-Per domande o problemi, apri un'issue su GitHub: https://github.com/iAlias/rs-cmp/issues
+Per domande o problemi, apri un'issue su GitHub: https://github.com/iAlias/openconsent/issues
