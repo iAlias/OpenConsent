@@ -1,6 +1,6 @@
 {
   "name": "openconsent",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Lightweight, dependency-free GDPR Consent Management Platform (CMP) with native Google Consent Mode v2 support. Drop-in cookie banner, script blocking, no monthly fees.",
   "main": "dist/openconsent.cjs",
   "module": "dist/openconsent.esm.js",
