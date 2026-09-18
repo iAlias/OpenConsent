@@ -6,7 +6,7 @@
     <title>Google Tag Manager Integration - OpenConsent v2</title>
     
     <!-- OpenConsent v2 CMP - Place early in <head>, BEFORE GTM -->
-    <script src="../dist/openconsent.min.js" data-site-id="demo-gtm-site"></script>
+    <script src="../dist/openconsent.min.js" data-site-id="demo-gtm-site" data-auto-init="false"></script>
     <script>
         // Initialize CMP before GTM
         window.OpenConsent.init({
@@ -175,7 +175,7 @@
     
     <div class="code-block">
 &lt;!-- 1. Load OpenConsent v2 CMP first --&gt;
-&lt;script src="https://cdn.jsdelivr.net/npm/openconsent@2/dist/openconsent.min.js" data-site-id="your-site-id"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/openconsent@2/dist/openconsent.min.js" data-site-id="your-site-id" data-auto-init="false"&gt;&lt;/script&gt;
 &lt;script&gt;
     window.OpenConsent.init({
         siteId: 'your-site-id',
