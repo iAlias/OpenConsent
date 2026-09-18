@@ -117,6 +117,25 @@ function getNonce() {
   return null;
 }
 
+/**
+ * Resolve once `document.body` exists.
+ *
+ * The recommended setup loads this script as the first thing in `<head>`
+ * (see README) so trackers are blocked before they run — which means it
+ * executes while the parser is still inside `<head>`, before `<body>` has
+ * been created. Any DOM insertion (banner, overlay, reopen button) has to
+ * wait for that, otherwise `document.body` is null.
+ * @returns {Promise<void>}
+ */
+function waitForBody() {
+  if (document.body) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    document.addEventListener('DOMContentLoaded', () => resolve(), { once: true });
+  });
+}
+
 class ConsentStorage {
   /**
    * Save consent to localStorage and cookie
@@ -1643,7 +1662,11 @@ class RSCMP {
       
       // Check if consent already exists
       const existingConsent = this.consentStorage.getConsent();
-      
+
+      // Banner/overlay/button insertion needs document.body, which may not
+      // exist yet if this script runs from <head> (the recommended setup).
+      await waitForBody();
+
       if (existingConsent) {
         // Apply existing consent without reload (initial page load)
         this.applyConsent(existingConsent.categories, false);
