@@ -262,13 +262,13 @@ window.addEventListener('rscmp:consent-updated', (event) => {
             
             if (consent) {
                 const gcmState = {
-                    'analytics_storage': consent.categories.analytics ? 'granted' : 'denied',
-                    'ad_storage': consent.categories.marketing ? 'granted' : 'denied',
-                    'ad_user_data': consent.categories.marketing ? 'granted' : 'denied',
-                    'ad_personalization': consent.categories.marketing ? 'granted' : 'denied',
-                    'personalization_storage': consent.categories.preferences ? 'granted' : 'denied',
-                    'functionality_storage': consent.categories.necessary ? 'granted' : 'denied',
-                    'security_storage': consent.categories.necessary ? 'granted' : 'denied'
+                    'analytics_storage': consent.analytics ? 'granted' : 'denied',
+                    'ad_storage': consent.marketing ? 'granted' : 'denied',
+                    'ad_user_data': consent.marketing ? 'granted' : 'denied',
+                    'ad_personalization': consent.marketing ? 'granted' : 'denied',
+                    'personalization_storage': consent.preferences ? 'granted' : 'denied',
+                    'functionality_storage': consent.necessary ? 'granted' : 'denied',
+                    'security_storage': consent.necessary ? 'granted' : 'denied'
                 };
                 
                 statusEl.innerHTML = Object.entries(gcmState)

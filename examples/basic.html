@@ -182,11 +182,10 @@
             if (consent) {
                 statusEl.innerHTML = `
                     <strong>Current Consent:</strong><br>
-                    Necessary: ${consent.categories.necessary ? '✅' : '❌'}<br>
-                    Analytics: ${consent.categories.analytics ? '✅' : '❌'}<br>
-                    Marketing: ${consent.categories.marketing ? '✅' : '❌'}<br>
-                    Preferences: ${consent.categories.preferences ? '✅' : '❌'}<br>
-                    <em>Timestamp: ${new Date(consent.timestamp).toLocaleString()}</em>
+                    Necessary: ${consent.necessary ? '✅' : '❌'}<br>
+                    Analytics: ${consent.analytics ? '✅' : '❌'}<br>
+                    Marketing: ${consent.marketing ? '✅' : '❌'}<br>
+                    Preferences: ${consent.preferences ? '✅' : '❌'}
                 `;
             } else {
                 statusEl.textContent = 'No consent recorded yet. The banner should be displayed.';

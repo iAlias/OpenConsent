@@ -151,11 +151,10 @@
       const consent = window.OpenConsent ? window.OpenConsent.getConsent() : null;
       const el = document.getElementById('consent-status');
       if (consent) {
-        el.innerHTML = `Necessary: ${consent.categories.necessary ? '✅' : '❌'} &nbsp; ` +
-          `Analytics: ${consent.categories.analytics ? '✅' : '❌'} &nbsp; ` +
-          `Marketing: ${consent.categories.marketing ? '✅' : '❌'} &nbsp; ` +
-          `Preferences: ${consent.categories.preferences ? '✅' : '❌'}<br>` +
-          `<span style="opacity:.7">Recorded: ${new Date(consent.timestamp).toLocaleString()}</span>`;
+        el.innerHTML = `Necessary: ${consent.necessary ? '✅' : '❌'} &nbsp; ` +
+          `Analytics: ${consent.analytics ? '✅' : '❌'} &nbsp; ` +
+          `Marketing: ${consent.marketing ? '✅' : '❌'} &nbsp; ` +
+          `Preferences: ${consent.preferences ? '✅' : '❌'}`;
       } else {
         el.textContent = 'No consent recorded yet — the banner should be visible.';
       }
