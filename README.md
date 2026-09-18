@@ -11,6 +11,8 @@
 
 **[Try the live demo →](https://ialias.github.io/OpenConsent/)**
 
+![OpenConsent banner: default view, customize-preferences panel, and the resulting consent status](assets/openconsent-demo.gif)
+
 The free, open-source alternative to Cookiebot, OneTrust and Iubenda: full control over your
 consent management, no vendor lock-in, no monthly fees. One script tag, zero dependencies,
 **no backend required**.
