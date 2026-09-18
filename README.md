@@ -39,7 +39,7 @@ consent management, no vendor lock-in, no monthly fees. One script tag, zero dep
 ```html
 <script src="https://cdn.jsdelivr.net/npm/openconsent@2/dist/openconsent.min.js"></script>
 <!-- pinned to a tag on GitHub instead of npm: -->
-<script src="https://cdn.jsdelivr.net/gh/iAlias/OpenConsent@v2.0.0/dist/openconsent.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/iAlias/OpenConsent@v2.0.1/dist/openconsent.min.js"></script>
 ```
 
 That's enough for the zero-config banner. Place it as the **first script in `<head>`**,
