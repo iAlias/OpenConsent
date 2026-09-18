@@ -1,6 +1,6 @@
 # OpenConsent
 
-> **A lightweight, dependency-free GDPR Consent Management Platform with native Google Consent Mode v2 support.**
+**A lightweight, dependency-free GDPR Consent Management Platform with native Google Consent Mode v2 support.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/openconsent.svg?style=flat)](https://www.npmjs.com/package/openconsent)
@@ -8,6 +8,8 @@
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)]()
 [![Google Consent Mode v2](https://img.shields.io/badge/Google%20Consent%20Mode-v2-4285F4.svg)]()
 [![GDPR Compliant](https://img.shields.io/badge/GDPR-compliant-success.svg)]()
+
+🇮🇹 [Leggi in italiano](README.it.md)
 
 **[Try the live demo →](https://ialias.github.io/OpenConsent/)**
 
@@ -29,6 +31,23 @@ consent management, no vendor lock-in, no monthly fees. One script tag, zero dep
 > Part of a small **web-compliance toolkit**: pair it with
 > [AccessiScan](https://github.com/iAlias/AccessiScan) to audit accessibility
 > (WCAG 2.1 / EN 301 549) on the same sites.
+
+---
+
+## Contents
+
+- [Install](#install)
+- [Quick start](#quick-start)
+- [How script blocking works](#how-script-blocking-works)
+- [Configuration](#configuration)
+- [API reference](#api-reference)
+- [Google Consent Mode v2](#google-consent-mode-v2)
+- [Framework examples](#framework-examples)
+- [Migrating from v1 (`rs-cmp`)](#migrating-from-v1-rs-cmp)
+- [Optional: consent logging backend](#optional-consent-logging-backend)
+- [Development](#development)
+- [Security & compliance](#security--compliance)
+- [License](#license)
 
 ---
 
@@ -332,6 +351,8 @@ fails if they drift from the source.
 - URLs and CSS color values are sanitized before being written to the DOM.
 - Optional backend logging hashes IP addresses (SHA-256) before storage.
 - Consent expires after 12 months and is re-requested.
+
+See [`GDPR_COMPLIANCE.md`](GDPR_COMPLIANCE.md) for the full compliance breakdown.
 
 ---
 
