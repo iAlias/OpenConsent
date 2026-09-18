@@ -11,7 +11,8 @@
         // Initialize the CMP
         window.OpenConsent.init({
             siteId: 'demo-site-001',
-            apiUrl: 'http://localhost:3000',
+            // apiUrl is optional — omit it to run fully client-side with no network requests.
+            // Set it to your own backend if you want server-side consent logging (see server-side/).
             config: {
                 banner: {
                     position: 'bottom',
@@ -151,7 +152,6 @@
 &lt;script&gt;
     window.OpenConsent.init({
         siteId: 'demo-site-001',
-        apiUrl: 'http://localhost:3000',
         config: { /* ... */ }
     });
 &lt;/script&gt;

@@ -3,9 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OpenConsent v2 — live examples</title>
+<title>OpenConsent v2 — live demo</title>
+<meta name="description" content="Live demo of OpenConsent, a lightweight, dependency-free GDPR Consent Management Platform with native Google Consent Mode v2 support.">
+
+<!-- OpenConsent v2 — served from this same site, no config required -->
+<script src="dist/openconsent.min.js" data-site-id="demo-site-001"></script>
+<script>
+  window.OpenConsent.init({
+    siteId: 'demo-site-001',
+    config: {
+      banner: {
+        position: 'bottom',
+        layout: 'bar',
+        primaryColor: '#2563eb'
+      },
+      categories: [
+        { id: 'necessary',   name: 'Necessary',   description: 'Essential cookies required for the site to function', required: true,  enabled: true },
+        { id: 'analytics',   name: 'Analytics',   description: 'Help us understand how visitors interact with the site', required: false, enabled: false },
+        { id: 'marketing',   name: 'Marketing',   description: 'Used to track visitors across websites for marketing purposes', required: false, enabled: false },
+        { id: 'preferences', name: 'Preferences', description: 'Remember your preferences and settings', required: false, enabled: false }
+      ]
+    }
+  });
+</script>
+
+<!-- Example tracking scripts — stay blocked until the visitor consents -->
+<script type="text/plain" data-category="analytics">console.log('Analytics script would load here (blocked until consent)');</script>
+<script type="text/plain" data-category="marketing">console.log('Marketing script would load here (blocked until consent)');</script>
+
 <style>
-  :root { color-scheme: light dark; }
+  :root { color-scheme: light dark; --accent: #2563eb; }
   body {
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     line-height: 1.6;
@@ -15,6 +42,35 @@
   }
   h1 { margin-bottom: .25rem; }
   .lead { font-size: 1.1rem; opacity: .8; margin-top: 0; }
+  .badges { margin: 1rem 0 2rem; display: flex; gap: .5rem; flex-wrap: wrap; }
+  .badges img { height: 20px; }
+  .cta { display: flex; gap: .6rem; flex-wrap: wrap; margin: 1.5rem 0; }
+  .cta a {
+    background: var(--accent);
+    color: #fff;
+    padding: .55rem 1.1rem;
+    border-radius: .5rem;
+    text-decoration: none;
+    font-size: .95rem;
+  }
+  .cta a.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: .55rem 1.1rem;
+    border-radius: .5rem;
+    cursor: pointer;
+    font-size: .9rem;
+    margin: .2rem .4rem .2rem 0;
+  }
+  #consent-status {
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: .85rem;
+    background: rgba(128,128,128,.1);
+    border-radius: .5rem;
+    padding: .8rem 1rem;
+  }
   ul { list-style: none; padding: 0; }
   li { margin: 1rem 0; }
   a.card {
@@ -38,12 +94,33 @@
     full control, no monthly fees.
   </p>
 
-  <h2>Live examples</h2>
+  <div class="badges">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT">
+    <img src="https://img.shields.io/npm/v/openconsent.svg?style=flat" alt="npm version">
+    <img src="https://img.shields.io/badge/dependencies-0-brightgreen.svg" alt="Zero dependencies">
+  </div>
+
+  <p>The banner you (should have) just seen at the bottom of this page <strong>is</strong> OpenConsent — this page loads nothing else. Try it:</p>
+
+  <div>
+    <button onclick="window.OpenConsent.showPreferences()">Show banner again</button>
+    <button onclick="window.OpenConsent.resetConsent()">Reset consent</button>
+    <button onclick="console.log('Current consent:', window.OpenConsent.getConsent())">Log consent to console</button>
+  </div>
+
+  <p id="consent-status">Checking consent status…</p>
+
+  <div class="cta">
+    <a href="https://github.com/iAlias/openconsent">View on GitHub</a>
+    <a class="secondary" href="https://www.npmjs.com/package/openconsent">View on npm</a>
+  </div>
+
+  <h2>More examples</h2>
   <ul>
     <li>
       <a class="card" href="examples/basic.html">
         <strong>Basic banner</strong>
-        <span>The consent banner in its default configuration.</span>
+        <span>The consent banner in its default configuration, with an annotated code sample.</span>
       </a>
     </li>
     <li>
@@ -61,8 +138,30 @@
   </ul>
 
   <footer>
+    Part of a small web-compliance toolkit — pair it with
+    <a href="https://github.com/iAlias/AccessiScan">AccessiScan</a> to audit accessibility
+    (WCAG 2.1 / EN 301 549) on the same site.
+    <br>
     Source and documentation on
     <a href="https://github.com/iAlias/OpenConsent">GitHub</a>.
   </footer>
+
+  <script>
+    function updateConsentStatus() {
+      const consent = window.OpenConsent ? window.OpenConsent.getConsent() : null;
+      const el = document.getElementById('consent-status');
+      if (consent) {
+        el.innerHTML = `Necessary: ${consent.categories.necessary ? '✅' : '❌'} &nbsp; ` +
+          `Analytics: ${consent.categories.analytics ? '✅' : '❌'} &nbsp; ` +
+          `Marketing: ${consent.categories.marketing ? '✅' : '❌'} &nbsp; ` +
+          `Preferences: ${consent.categories.preferences ? '✅' : '❌'}<br>` +
+          `<span style="opacity:.7">Recorded: ${new Date(consent.timestamp).toLocaleString()}</span>`;
+      } else {
+        el.textContent = 'No consent recorded yet — the banner should be visible.';
+      }
+    }
+    setInterval(updateConsentStatus, 1000);
+    updateConsentStatus();
+  </script>
 </body>
 </html>

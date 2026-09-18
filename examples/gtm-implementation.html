@@ -11,7 +11,7 @@
         // Initialize CMP before GTM
         window.OpenConsent.init({
             siteId: 'demo-gtm-site',
-            apiUrl: 'http://localhost:3000',
+            // apiUrl is optional — omit it to run fully client-side with no network requests.
             config: {
                 banner: {
                     position: 'bottom',

@@ -9,6 +9,8 @@
 [![Google Consent Mode v2](https://img.shields.io/badge/Google%20Consent%20Mode-v2-4285F4.svg)]()
 [![GDPR Compliant](https://img.shields.io/badge/GDPR-compliant-success.svg)]()
 
+**[Try the live demo →](https://ialias.github.io/OpenConsent/)**
+
 The free, open-source alternative to Cookiebot, OneTrust and Iubenda: full control over your
 consent management, no vendor lock-in, no monthly fees. One script tag, zero dependencies,
 **no backend required**.
@@ -264,8 +266,9 @@ walkthrough, including how to trigger tags on consent changes and inspect Consen
 <details>
 <summary><strong>Plain HTML</strong></summary>
 
-Open [`examples/basic.html`](examples/basic.html) in a browser for a working demo with test
-buttons and a live consent-status readout.
+Try the [live demo](https://ialias.github.io/OpenConsent/) or open
+[`examples/basic.html`](examples/basic.html) locally — both have test buttons and a live
+consent-status readout.
 </details>
 
 ---
